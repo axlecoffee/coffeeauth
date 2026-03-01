@@ -1,8 +1,15 @@
-# CoffeeProxy
+# CoffeeAuth
 
-CoffeeProxy is a simple HTTP/SOCKS5 proxy mod for Minecraft Fabric 1.21.10.
+CoffeeAuth is a simple mod that allows you to login to session ID's without... yeah you get what i mean
 
-I had this mod in 1.8.9 but I couldn't find a single mod that did this for 1.21.10, so 1 ai slop prompt later and it exists or wtv.
+credits to [SchubiAuthV2](https://github.com/schubilegend/SchubiAuthV2) for the original Forge 1.8.9 mod, which I used for many years! (the 1.21 referenced version on its repo is kind of bad so i made my own)
+
+## Features
+
+- Login to session ID's (and thus accounts)
+- Restore your original session ID
+- Allows changing Skin/Name
+- Error handling (tuffff)
 
 ## Support/Whatever
 
