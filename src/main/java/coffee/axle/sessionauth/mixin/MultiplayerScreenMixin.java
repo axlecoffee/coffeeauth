@@ -35,10 +35,10 @@ public abstract class MultiplayerScreenMixin extends Screen {
         isSessionValid = null;
         hasValidationStarted = false;
 
-        int loginX = this.width - 90;
-        int editX = this.width - 180;
-        int restoreX = this.width - 270;
         int y = 5;
+        int loginX = 5;
+        int editX = 90;
+        int restoreX = 175;
 
         this.addDrawableChild(ButtonWidget
                 .builder(Text.literal("Login"), button -> MinecraftClient.getInstance().setScreen(new LoginScreen()))
@@ -80,7 +80,7 @@ public abstract class MultiplayerScreenMixin extends Screen {
                     .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
                     .append(statusText);
 
-            context.drawText(this.textRenderer, display, 5, 10, 0xFFFFFF, false);
+            context.drawText(this.textRenderer, display, 5, 30, 0xFFFFFF, false);
         });
     }
 }
