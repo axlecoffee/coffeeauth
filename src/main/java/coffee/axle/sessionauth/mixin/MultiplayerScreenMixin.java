@@ -4,8 +4,8 @@ import coffee.axle.sessionauth.screen.EditAccountScreen;
 import coffee.axle.sessionauth.screen.LoginScreen;
 import coffee.axle.sessionauth.util.ApiUtil;
 import coffee.axle.sessionauth.util.SessionUtil;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -54,33 +54,36 @@ public abstract class MultiplayerScreenMixin extends Screen {
             isSessionValid = null;
             hasValidationStarted = false;
         }).dimensions(restoreX, y, 80, 20).build());
+    }
 
-        ScreenEvents.afterRender((Screen) (Object) this).register((screen, context, mouseX, mouseY, delta) -> {
-            String username = SessionUtil.getUsername();
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
 
-            if (isSessionValid == null && !hasValidationStarted) {
-                hasValidationStarted = true;
-                new Thread(() -> {
-                    isSessionValid = ApiUtil.validateSession(
-                            MinecraftClient.getInstance().getSession().getAccessToken());
-                }, "CoffeeAuth-Validation").start();
-            }
+        String username = SessionUtil.getUsername();
 
-            Text statusText;
-            if (isSessionValid == null) {
-                statusText = Text.literal("[... Validating]").formatted(Formatting.GRAY);
-            } else if (isSessionValid) {
-                statusText = Text.literal("[✔] Valid").formatted(Formatting.GREEN);
-            } else {
-                statusText = Text.literal("[✘] Invalid").formatted(Formatting.RED);
-            }
+        if (isSessionValid == null && !hasValidationStarted) {
+            hasValidationStarted = true;
+            new Thread(() -> {
+                isSessionValid = ApiUtil.validateSession(
+                        MinecraftClient.getInstance().getSession().getAccessToken());
+            }, "CoffeeAuth-Validation").start();
+        }
 
-            Text display = Text.literal("User: ")
-                    .append(Text.literal(username).formatted(Formatting.WHITE))
-                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
-                    .append(statusText);
+        Text statusText;
+        if (isSessionValid == null) {
+            statusText = Text.literal("Validating...").formatted(Formatting.GRAY);
+        } else if (isSessionValid) {
+            statusText = Text.literal("Valid").formatted(Formatting.GREEN);
+        } else {
+            statusText = Text.literal("Invalid").formatted(Formatting.RED);
+        }
 
-            context.drawText(this.textRenderer, display, 5, 30, 0xFFFFFF, false);
-        });
+        Text display = Text.literal("User: ")
+                .append(Text.literal(username).formatted(Formatting.WHITE))
+                .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                .append(statusText);
+
+        context.drawTextWithShadow(this.textRenderer, display, 5, 30, 0xFFFFFFFF);
     }
 }

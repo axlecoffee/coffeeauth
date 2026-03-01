@@ -2,7 +2,6 @@ package coffee.axle.sessionauth.screen;
 
 import coffee.axle.sessionauth.CoffeeAuth;
 import coffee.axle.sessionauth.util.ApiUtil;
-import coffee.axle.sessionauth.util.FormatUtil;
 import coffee.axle.sessionauth.util.SessionUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -25,8 +24,7 @@ public class EditAccountScreen extends Screen {
 
     public EditAccountScreen() {
         super(Text.literal(""));
-        this.currentTitle = FormatUtil.surroundWithObfuscated(
-                Text.literal("Edit Account").formatted(Formatting.AQUA), 5);
+        this.currentTitle = Text.literal("Edit Account").formatted(Formatting.AQUA);
     }
 
     @Override
@@ -50,13 +48,11 @@ public class EditAccountScreen extends Screen {
         nameButton = ButtonWidget.builder(Text.literal("Change Name"), button -> {
             String newName = nameField.getText().trim();
             if (newName.isEmpty()) {
-                currentTitle = FormatUtil.surroundWithObfuscated(
-                        Text.literal("Please input a name").formatted(Formatting.RED), 5);
+                currentTitle = Text.literal("Please input a name").formatted(Formatting.RED);
                 return;
             }
             if (!newName.matches("^[a-zA-Z0-9_]{3,16}$")) {
-                currentTitle = FormatUtil.surroundWithObfuscated(
-                        Text.literal("Invalid name").formatted(Formatting.RED), 7);
+                currentTitle = Text.literal("Invalid name").formatted(Formatting.RED);
                 return;
             }
             String token = CoffeeAuth.currentSession.getAccessToken();
@@ -68,19 +64,13 @@ public class EditAccountScreen extends Screen {
                                 newName,
                                 CoffeeAuth.currentSession.getUuidOrNull(),
                                 token));
-                        yield FormatUtil.surroundWithObfuscated(
-                                Text.literal("Successfully changed name").formatted(Formatting.GREEN), 4);
+                        yield Text.literal("Successfully changed name").formatted(Formatting.GREEN);
                     }
-                    case 429 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Too many requests").formatted(Formatting.RED), 5);
-                    case 400 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Invalid name").formatted(Formatting.RED), 7);
-                    case 401 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Invalid token").formatted(Formatting.RED), 7);
-                    case 403 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Name unavailable or changed in last 35 days").formatted(Formatting.RED), 2);
-                    default -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Unknown error").formatted(Formatting.RED), 2);
+                    case 429 -> Text.literal("Too many requests").formatted(Formatting.RED);
+                    case 400 -> Text.literal("Invalid name").formatted(Formatting.RED);
+                    case 401 -> Text.literal("Invalid token").formatted(Formatting.RED);
+                    case 403 -> Text.literal("Name unavailable or changed in last 35 days").formatted(Formatting.RED);
+                    default -> Text.literal("Unknown error").formatted(Formatting.RED);
                 };
             }, "CoffeeAuth-ChangeName").start();
         }).dimensions(cx - 100, cy + 25, 97, 20).build();
@@ -89,22 +79,17 @@ public class EditAccountScreen extends Screen {
         skinButton = ButtonWidget.builder(Text.literal("Change Skin"), button -> {
             String skinUrl = skinUrlField.getText().trim();
             if (skinUrl.isEmpty()) {
-                currentTitle = FormatUtil.surroundWithObfuscated(
-                        Text.literal("Please input a URL").formatted(Formatting.RED), 5);
+                currentTitle = Text.literal("Please input a URL").formatted(Formatting.RED);
                 return;
             }
             String token = CoffeeAuth.currentSession.getAccessToken();
             new Thread(() -> {
                 int statusCode = ApiUtil.changeSkin(skinUrl, token);
                 currentTitle = switch (statusCode) {
-                    case 200 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Successfully changed skin").formatted(Formatting.GREEN), 4);
-                    case 429 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Too many requests").formatted(Formatting.RED), 5);
-                    case 401 -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Invalid token").formatted(Formatting.RED), 7);
-                    default -> FormatUtil.surroundWithObfuscated(
-                            Text.literal("Invalid skin").formatted(Formatting.RED), 7);
+                    case 200 -> Text.literal("Successfully changed skin").formatted(Formatting.GREEN);
+                    case 429 -> Text.literal("Too many requests").formatted(Formatting.RED);
+                    case 401 -> Text.literal("Invalid token").formatted(Formatting.RED);
+                    default -> Text.literal("Invalid skin").formatted(Formatting.RED);
                 };
             }, "CoffeeAuth-ChangeSkin").start();
         }).dimensions(cx + 3, cy + 25, 97, 20).build();
@@ -119,8 +104,7 @@ public class EditAccountScreen extends Screen {
         if (CoffeeAuth.originalSession.equals(CoffeeAuth.currentSession)) {
             nameButton.active = false;
             skinButton.active = false;
-            currentTitle = FormatUtil.surroundWithObfuscated(
-                    Text.literal("Cannot modify original session").formatted(Formatting.YELLOW), 4);
+            currentTitle = Text.literal("Cannot modify original session").formatted(Formatting.YELLOW);
         }
     }
 
@@ -129,15 +113,15 @@ public class EditAccountScreen extends Screen {
         super.render(context, mouseX, mouseY, delta);
 
         context.drawTextWithShadow(this.textRenderer,
-                Text.literal("Username:"), this.width / 2 - 100, this.height / 2 - 52, 0xA0A0A0);
+                Text.literal("Username:"), this.width / 2 - 100, this.height / 2 - 52, 0xFFA0A0A0);
         nameField.render(context, mouseX, mouseY, delta);
 
         context.drawTextWithShadow(this.textRenderer,
-                Text.literal("Skin URL:"), this.width / 2 - 100, this.height / 2 - 10, 0xA0A0A0);
+                Text.literal("Skin URL:"), this.width / 2 - 100, this.height / 2 - 10, 0xFFA0A0A0);
         skinUrlField.render(context, mouseX, mouseY, delta);
 
         context.drawCenteredTextWithShadow(this.textRenderer,
-                this.currentTitle, this.width / 2, this.height / 2 - 75, 0xFFFFFF);
+                this.currentTitle, this.width / 2, this.height / 2 - 75, 0xFFFFFFFF);
     }
 
     @Override

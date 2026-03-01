@@ -26,7 +26,7 @@ public class CoffeeAuth implements ClientModInitializer {
 		currentSession = originalSession;
 		overrideSession = true;
 
-		SessionUtil.updateWindowTitle();
+		SessionUtil.refreshWindowTitle();
 		LOGGER.info("CoffeeAuth v{} initialized", MOD_VERSION);
 	}
 }

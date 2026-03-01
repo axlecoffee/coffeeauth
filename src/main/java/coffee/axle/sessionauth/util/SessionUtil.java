@@ -40,19 +40,23 @@ public class SessionUtil {
 
     public static void setSession(Session session) {
         CoffeeAuth.currentSession = session;
-        updateWindowTitle();
+        refreshWindowTitle();
     }
 
     public static void restoreSession() {
         CoffeeAuth.currentSession = CoffeeAuth.originalSession;
-        updateWindowTitle();
+        refreshWindowTitle();
     }
 
-    public static void updateWindowTitle() {
+    /**
+     * Forces the window title to update immediately.
+     * The actual title content is controlled by the MinecraftClientMixin
+     * getWindowTitle injection, so this just triggers a refresh.
+     */
+    public static void refreshWindowTitle() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.getWindow() != null) {
-            String username = client.getSession().getUsername();
-            client.getWindow().setTitle("CoffeeAuth v" + CoffeeAuth.MOD_VERSION + " | " + username);
+            client.updateWindowTitle();
         }
     }
 }

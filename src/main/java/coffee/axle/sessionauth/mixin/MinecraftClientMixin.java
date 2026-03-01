@@ -27,4 +27,12 @@ public abstract class MinecraftClientMixin {
             cir.setReturnValue(ProfileKeys.MISSING);
         }
     }
+
+    @Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
+    private void onGetWindowTitle(CallbackInfoReturnable<String> cir) {
+        if (!CoffeeAuth.overrideSession)
+            return;
+        String username = CoffeeAuth.currentSession.getUsername();
+        cir.setReturnValue("CoffeeAuth v" + CoffeeAuth.MOD_VERSION + " | " + username);
+    }
 }
