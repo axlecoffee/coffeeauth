@@ -1,0 +1,86 @@
+package coffee.axle.sessionauth.mixin;
+
+import coffee.axle.sessionauth.screen.EditAccountScreen;
+import coffee.axle.sessionauth.screen.LoginScreen;
+import coffee.axle.sessionauth.util.ApiUtil;
+import coffee.axle.sessionauth.util.SessionUtil;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(MultiplayerScreen.class)
+public abstract class MultiplayerScreenMixin extends Screen {
+
+    @Unique
+    private static Boolean isSessionValid = null;
+
+    @Unique
+    private static boolean hasValidationStarted = false;
+
+    protected MultiplayerScreenMixin(Text title) {
+        super(title);
+    }
+
+    @Inject(method = "init", at = @At("TAIL"))
+    private void onInit(CallbackInfo ci) {
+        isSessionValid = null;
+        hasValidationStarted = false;
+
+        int loginX = this.width - 90;
+        int editX = this.width - 180;
+        int restoreX = this.width - 270;
+        int y = 5;
+
+        this.addDrawableChild(ButtonWidget
+                .builder(Text.literal("Login"), button -> MinecraftClient.getInstance().setScreen(new LoginScreen()))
+                .dimensions(loginX, y, 80, 20).build());
+
+        this.addDrawableChild(ButtonWidget
+                .builder(Text.literal("Edit Account"),
+                        button -> MinecraftClient.getInstance().setScreen(new EditAccountScreen()))
+                .dimensions(editX, y, 80, 20).build());
+
+        this.addDrawableChild(ButtonWidget.builder(Text.literal("Restore"), button -> {
+            SessionUtil.restoreSession();
+            isSessionValid = null;
+            hasValidationStarted = false;
+        }).dimensions(restoreX, y, 80, 20).build());
+
+        ScreenEvents.afterRender((Screen) (Object) this).register((screen, context, mouseX, mouseY, delta) -> {
+            String username = SessionUtil.getUsername();
+
+            if (isSessionValid == null && !hasValidationStarted) {
+                hasValidationStarted = true;
+                new Thread(() -> {
+                    isSessionValid = ApiUtil.validateSession(
+                            MinecraftClient.getInstance().getSession().getAccessToken());
+                }, "CoffeeAuth-Validation").start();
+            }
+
+            Text statusText;
+            if (isSessionValid == null) {
+                statusText = Text.literal("[... Validating]").formatted(Formatting.GRAY);
+            } else if (isSessionValid) {
+                statusText = Text.literal("[✔] Valid").formatted(Formatting.GREEN);
+            } else {
+                statusText = Text.literal("[✘] Invalid").formatted(Formatting.RED);
+            }
+
+            Text display = Text.literal("User: ")
+                    .append(Text.literal(username).formatted(Formatting.WHITE))
+                    .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
+                    .append(statusText);
+
+            context.drawText(this.textRenderer, display, 5, 10, 0xFFFFFF, false);
+        });
+    }
+}

@@ -2,21 +2,19 @@
 	"schemaVersion": 1,
 	"id": "coffeeauth",
 	"version": "${version}",
-	"name": "coffeeauth",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "CoffeeAuth",
+	"description": "Session ID login mod for Fabric",
 	"authors": [
-		"Me!"
+		"axle"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/axlecoffee/coffeeauth"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/coffeeauth/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"coffee.axle.sessionauth.Coffeeauth"
+		"client": [
+			"coffee.axle.sessionauth.CoffeeAuth"
 		]
 	},
 	"mixins": [
@@ -24,7 +22,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.10",
+		"minecraft": ">=1.21.10",
 		"java": ">=21",
 		"fabric-api": "*"
 	}

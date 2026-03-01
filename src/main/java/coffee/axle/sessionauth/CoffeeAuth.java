@@ -1,24 +1,32 @@
 package coffee.axle.sessionauth;
 
-import net.fabricmc.api.ModInitializer;
-
+import coffee.axle.sessionauth.util.SessionUtil;
+import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CoffeeAuth implements ModInitializer {
+public class CoffeeAuth implements ClientModInitializer {
 	public static final String MOD_ID = "coffeeauth";
-
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
+	public static final String MOD_VERSION = "1.0.0";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	@Override
-	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+	public static Session originalSession;
+	public static Session currentSession;
+	public static boolean overrideSession = false;
 
-		LOGGER.info("Hello Fabric world!");
+	public static boolean isSessionModified() {
+		return currentSession != null && !currentSession.equals(originalSession);
+	}
+
+	@Override
+	public void onInitializeClient() {
+		originalSession = MinecraftClient.getInstance().getSession();
+		currentSession = originalSession;
+		overrideSession = true;
+
+		SessionUtil.updateWindowTitle();
+		LOGGER.info("CoffeeAuth v{} initialized", MOD_VERSION);
 	}
 }

@@ -2,13 +2,11 @@
 	"required": true,
 	"package": "coffee.axle.sessionauth.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
+	"client": [
+		"MinecraftClientMixin",
+		"MultiplayerScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
 	}
 }
